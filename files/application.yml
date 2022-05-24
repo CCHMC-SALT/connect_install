@@ -1,0 +1,35 @@
+proxy:
+  title: LungMap Apps
+  logo-url: https://www.lungmap.net/resources/themes/lungmap/img/logo.png
+  landing-page: /
+  heartbeat-rate: 10000
+  heartbeat-timeout: 60000
+  container-wait-time: 60000
+  usage-stats-url: micrometer
+  template-path: /etc/shinyproxy/templates/lungmap
+  port: 8080
+  specs:
+  - id: azimuth-lung-cell-cards-human
+    display-name: Azimuth Lung Cell Cards Human
+    container-cmd: ["R", "-e", "options('Azimuth.app.do_adt' = FALSE)", "-e", "options('Azimuth.app.demodataset' = '/reference-data/human-cellcards/D071.h5')", "-e", "Azimuth::AzimuthApp(reference='/reference-data/human-cellcards')"]
+    container-image: azimuth
+    container-volumes: [ "/reference-data:/reference-data:ro" ]
+    # - id: shinycell-lung-cell-cards-human
+    # display-name: ShinyCell Lung Cell Cards Human
+    # container-image: shinycell-lung-cell-cards-human
+  - id: shinycell-lung-cell-cards-human-mnn
+    display-name: ShinyCell Lung Cell Cards Human
+    container-image: shinycell-lung-cell-cards-human-mnn
+  - id: shinycell-mm-timecourse
+    display-name: ShinyCell Mm Timecourse
+    container-image: shinycell-mm-timecourse
+
+management:
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+
+logging:
+  file:
+    name: shinyproxy.log
