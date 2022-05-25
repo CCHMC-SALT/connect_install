@@ -23,6 +23,9 @@ proxy:
   - id: shinycell-mm-timecourse
     display-name: ShinyCell Mm Timecourse
     container-image: shinycell-mm-timecourse
+  - id: shinycell-rhesuslung
+    display-name: ShinyCell Rhesus Lung
+    container-image: shinycell-rhesuslung
 
 management:
   metrics:
