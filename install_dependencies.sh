@@ -10,6 +10,33 @@ getparameter() {
   aws ssm get-parameter --region $REGION --name $1 | jq -r .Parameter.Value
 }
 
+#
+# mount the efs resources for reference data
+# 
+
+echo "Mounting reference data filesystem..."
+
+FSID=$(getparameter /Infra/App/shiny/EfsFsId)
+MOUNTPOINT="/reference-data"
+
+if [ ! -d $MOUNTPOINT ]; then
+  mkdir $MOUNTPOINT
+fi
+ 
+if ! grep $FSID /etc/fstab > /dev/null; then
+  echo "${FSID}:/ ${MOUNTPOINT} efs _netdev,tls 0 0" >> /etc/fstab
+fi
+ 
+if ! grep $MOUNTPOINT /etc/fstab > /dev/null; then
+  mount $MOUNTPOINT
+fi
+
+#
+# install docker
+#
+
+echo "Installing docker..."
+
 yum update -y
 
 yum install java-openjdk -y
@@ -34,13 +61,25 @@ EOF
 systemctl daemon-reload
 systemctl restart docker
 
+#
+# pull rshiny images
+#
+
+echo "Pulling rshiny images..."
+
 aws ecr get-login-password --region $REGION | docker login --username AWS --password-stdin ${ACCOUNTID}.dkr.ecr.${REGION}.amazonaws.com 
 
-for URI in $(aws ecr describe-repositories --repository-names $(getparameter /lungmap/${ENVIRONMENTCODE}/RepoList) --region $REGION | jq -r .repositories[].repositoryUri); do
+for URI in $(aws ecr describe-repositories --repository-names $(getparameter /Infra/App/shiny/RepoList) --region $REGION | jq -r .repositories[].repositoryUri); do
   docker pull $URI
   IMAGE=${URI##*/}
   docker image tag ${URI}:latest ${IMAGE}:latest
 done
+
+#
+# install and configure shinyproxy
+#
+
+echo "Installing and configuring shinyproxy..."
 
 wget -P /tmp/ https://www.shinyproxy.io/downloads/shinyproxy_2.6.0_x86_64.rpm
 
