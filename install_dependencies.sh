@@ -36,8 +36,6 @@ fi
 
 echo "Installing docker..."
 
-yum update -y
-
 yum install java-openjdk -y
 amazon-linux-extras install docker -y
 
@@ -108,8 +106,6 @@ metadata_expire=300
 EOF
 
 fi
-
-yum update -y
 
 yum install prometheus2 -y
 
