@@ -15,6 +15,9 @@ getparameter() {
 
 echo "Mounting reference data filesystem..."
 
+# wait for a bit for the efs utils to become available
+sleep 20
+
 FSID=$(getparameter /Infra/App/shiny/EfsFsId)
 MOUNTPOINT="/reference-data"
 
@@ -36,7 +39,7 @@ fi
 
 echo "Installing docker..."
 
-yum install java-openjdk -y
+yum install java-openjdk yq -y
 amazon-linux-extras install docker -y
 
 service docker start
@@ -66,7 +69,8 @@ echo "Pulling rshiny images..."
 
 aws ecr get-login-password --region $REGION | docker login --username AWS --password-stdin ${ACCOUNTID}.dkr.ecr.${REGION}.amazonaws.com 
 
-for URI in $(aws ecr describe-repositories --repository-names $(getparameter /Infra/App/shiny/RepoList) --region $REGION | jq -r .repositories[].repositoryUri); do
+#for URI in $(aws ecr describe-repositories --repository-names $(getparameter /Infra/App/shiny/RepoList) --region $REGION | jq -r .repositories[].repositoryUri); do
+for URI in $(aws ecr describe-repositories --repository-names $(cat files/application.yml | yq | jq -r '.proxy.specs[]."container-image"') --region $REGION | jq -r .repositories[].repositoryUri); do
   docker pull $URI
   IMAGE=${URI##*/}
   docker image tag ${URI}:latest ${IMAGE}:latest
