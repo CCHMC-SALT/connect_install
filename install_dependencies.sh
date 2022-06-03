@@ -39,7 +39,8 @@ fi
 
 echo "Installing docker..."
 
-yum install java-openjdk yq -y
+pip3 install yq
+yum install java-openjdk -y
 amazon-linux-extras install docker -y
 
 service docker start
