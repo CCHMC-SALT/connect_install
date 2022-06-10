@@ -26,6 +26,14 @@ proxy:
   - id: shinycell-rhesuslung
     display-name: ShinyCell Rhesus Lung
     container-image: shinycell-rhesuslung
+  - id: azimuth-human-lung-cellref-seed
+    display-name: Azimuth Human Lung CellRef Seed v.1
+    container-cmd: ["R", "-e", "options('Azimuth.app.do_adt' = FALSE)", "-e", "options('Azimuth.app.demodataset' = '/reference-data/azimuth-human-lung-cellref-seed/D071.h5', 'Azimuth.app.default_metadata' = 'celltype_level3')", "-e", "Azimuth::AzimuthApp(reference='/reference-data/azimuth-human-lung-cellref-seed/')"]
+    container-image: azimuth
+    container-volumes: [ "/reference-data:/reference-data:ro" ]
+  - id: shinycell-human-lung-cellref
+    display-name: ShinyCell Human Lung CellRef
+    container-image: shinycell-human-lung-cellref
 
 management:
   metrics:
