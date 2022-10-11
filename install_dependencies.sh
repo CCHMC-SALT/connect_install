@@ -100,7 +100,7 @@ echo "Installing Prometheus monitoring"
 
 OWD=$PWD
 
-if [ ! -f /etc/yum.repos.d/preometheus.repo ]; then
+if [ ! -f /etc/yum.repos.d/prometheus.repo ]; then
 
 cat << EOF > /etc/yum.repos.d/prometheus.repo
 [prometheus]
