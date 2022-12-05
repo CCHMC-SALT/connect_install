@@ -57,7 +57,7 @@ cat << 'EOF' > /etc/systemd/system/docker.service.d/override.conf
 
 [Service]
 ExecStart=
-ExecStart=/usr/bin/dockerd -H unix:// -D -H tcp://127.0.0.1:2375
+ExecStart=/usr/bin/dockerd --max-concurrent-downloads 6 -H unix:// -D -H tcp://127.0.0.1:2375
 
 EOF
 
@@ -82,6 +82,8 @@ for URI in $(aws ecr describe-repositories --repository-names $(cat ${DEPLOYDIR}
 done
 
 wait
+
+echo "Image pull complete!!!"
 
 #
 # install and configure shinyproxy
