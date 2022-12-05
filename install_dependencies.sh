@@ -76,10 +76,12 @@ aws ecr get-login-password --region $REGION | docker login --username AWS --pass
 
 ls -l ./
 for URI in $(aws ecr describe-repositories --repository-names $(cat ${DEPLOYDIR}/files/application.yml | yq -r '.proxy.specs[]."container-image"') --region $REGION | jq -r .repositories[].repositoryUri); do
-  docker pull $URI
+  ( docker pull $URI
   IMAGE=${URI##*/}
-  docker image tag ${URI}:latest ${IMAGE}:latest
+  docker image tag ${URI}:latest ${IMAGE}:latest ) &
 done
+
+wait
 
 #
 # install and configure shinyproxy
