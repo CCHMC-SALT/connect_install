@@ -122,6 +122,7 @@ fi
 
 yum install prometheus2 -y
 
+if ! grep shinyproxy /etc/prometheus/prometheus.yml > /dev/null; then
 cat << EOF >> /etc/prometheus/prometheus.yml
 
   - job_name: 'shinyproxy'
@@ -130,10 +131,12 @@ cat << EOF >> /etc/prometheus/prometheus.yml
       # note: this is the port of ShinyProxy Actuator services, not the port of Prometheus which is by default also 9090
       - targets: ['localhost:9090']
 EOF
+fi
 
 echo "PROMETHEUS_OPTS='--config.file=/etc/prometheus/prometheus.yml --storage.tsdb.path=/var/lib/prometheus/data --web.console.libraries=/usr/share/prometheus/console_libraries --web.console.templates=/usr/share/prometheus/consoles --web.listen-address=0.0.0.0:7070'" > /etc/default/prometheus
 
 systemctl start prometheus
+systemctl enable prometheus
 
 echo "Creating cloudwatch export script"
 
