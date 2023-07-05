@@ -1,167 +1,75 @@
 #! /bin/bash -xe
 
-TOKEN=$(curl -X PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 21600")
-REGION=$(curl -H "X-aws-ec2-metadata-token: $TOKEN" http://169.254.169.254/latest/dynamic/instance-identity/document | jq -r ".region")
-ACCOUNTID=$(curl -H "X-aws-ec2-metadata-token: $TOKEN" http://169.254.169.254/latest/dynamic/instance-identity/document | jq -r ".accountId")
-INSTANCEID=$(curl -H "X-aws-ec2-metadata-token: $TOKEN" http://169.254.169.254/latest/meta-data/instance-id)
+apt-get update -qq
 
-getparameter() { 
-  aws ssm get-parameter --region $REGION --name $1 | jq -r .Parameter.Value
-}
+# install versions of R
+R_VERSION=3.6.2
 
-DEPLOYDIR="/opt/codedeploy-agent/deployment-root/${DEPLOYMENT_GROUP_ID}/${DEPLOYMENT_ID}/deployment-archive"
+R_FILE="r-${R_VERSION}_1_amd64.deb"
 
-#
-# mount the efs resources for reference data
-# 
+curl -O https://cdn.rstudio.com/r/ubuntu-2204/pkgs/r-${R_VERSION}_1_amd64.deb
+DEBIAN_FRONTEND=noninteractive gdebi --non-interactive r-${R_VERSION}_1_amd64.deb
+rm -f ./r-${R_VERSION}_1_amd64.deb
 
-echo "Mounting reference data filesystem..."
+R_VERSION_ALT=4.1.0
+    curl -O https://cdn.rstudio.com/r/ubuntu-2204/pkgs/r-${R_VERSION_ALT}_1_amd64.deb && \
+    DEBIAN_FRONTEND=noninteractive gdebi --non-interactive r-${R_VERSION_ALT}_1_amd64.deb && \
+    rm -f ./r-${R_VERSION_ALT}_1_amd64.deb \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
-# wait for a bit for the efs utils to become available
-sleep 20
-
-FSID=$(getparameter /Infra/App/shiny/EfsFsId)
-MOUNTPOINT="/reference-data"
-
-if [ ! -d $MOUNTPOINT ]; then
-  mkdir $MOUNTPOINT
-fi
- 
-if ! grep $FSID /etc/fstab > /dev/null; then
-  echo "${FSID}:/ ${MOUNTPOINT} efs _netdev,tls 0 0" >> /etc/fstab
-fi
- 
-if ! mount | grep $MOUNTPOINT > /dev/null; then
-  mount $MOUNTPOINT
-fi
-
-#
-# install docker
-#
-
-echo "Installing docker..."
-
-pip3 install yq
-yum install java-openjdk -y
-amazon-linux-extras install docker -y
-
-service docker start
-
-systemctl enable docker
-
-if [ ! -d /etc/systemd/system/docker.service.d/ ]; then
-  mkdir /etc/systemd/system/docker.service.d/
-fi
-
-cat << 'EOF' > /etc/systemd/system/docker.service.d/override.conf
-
-[Service]
-ExecStart=
-ExecStart=/usr/bin/dockerd --max-concurrent-downloads 6 -H unix:// -D -H tcp://127.0.0.1:2375
-
-EOF
-
-systemctl daemon-reload
-systemctl restart docker
-
-#
-# pull rshiny images
-#
-
-echo "Pulling rshiny images..."
-
-aws ecr get-login-password --region $REGION | docker login --username AWS --password-stdin ${ACCOUNTID}.dkr.ecr.${REGION}.amazonaws.com 
-
-#for URI in $(aws ecr describe-repositories --repository-names $(getparameter /Infra/App/shiny/RepoList) --region $REGION | jq -r .repositories[].repositoryUri); do
-
-ls -l ./
-for URI in $(aws ecr describe-repositories --repository-names $(cat ${DEPLOYDIR}/files/application.yml | yq -r '.proxy.specs[]."container-image"') --region $REGION | jq -r .repositories[].repositoryUri); do
-  ( docker pull $URI
-  IMAGE=${URI##*/}
-  docker image tag ${URI}:latest ${IMAGE}:latest ) &
-done
-
-wait
-
-echo "Image pull complete!!!"
-
-#
-# install and configure shinyproxy
-#
-
-echo "Installing and configuring shinyproxy..."
-
-wget -P /tmp/ https://www.shinyproxy.io/downloads/shinyproxy_2.6.0_x86_64.rpm
-
-rpm --install /tmp/shinyproxy_2.6.0_x86_64.rpm
-
-systemctl daemon-reload
-systemctl stop shinyproxy
-
-usermod -a -G docker shinyproxy
-
-echo "Installing Prometheus monitoring"
-
-OWD=$PWD
-
-if [ ! -f /etc/yum.repos.d/prometheus.repo ]; then
-
-cat << EOF > /etc/yum.repos.d/prometheus.repo
-[prometheus]
-name=prometheus
-baseurl=https://packagecloud.io/prometheus-rpm/release/el/7/x86_64
-repo_gpgcheck=1
-enabled=1
-gpgkey=https://packagecloud.io/prometheus-rpm/release/gpgkey
-       https://raw.githubusercontent.com/lest/prometheus-rpm/master/RPM-GPG-KEY-prometheus-rpm
-gpgcheck=1
-metadata_expire=300
-EOF
-
-fi
-
-yum install prometheus2 -y
-
-if ! grep shinyproxy /etc/prometheus/prometheus.yml > /dev/null; then
-cat << EOF >> /etc/prometheus/prometheus.yml
-
-  - job_name: 'shinyproxy'
-    metrics_path: '/actuator/prometheus'
-    static_configs:
-      # note: this is the port of ShinyProxy Actuator services, not the port of Prometheus which is by default also 9090
-      - targets: ['localhost:9090']
-EOF
-fi
-
-echo "PROMETHEUS_OPTS='--config.file=/etc/prometheus/prometheus.yml --storage.tsdb.path=/var/lib/prometheus/data --web.console.libraries=/usr/share/prometheus/console_libraries --web.console.templates=/usr/share/prometheus/consoles --web.listen-address=0.0.0.0:7070'" > /etc/default/prometheus
-
-systemctl start prometheus
-systemctl enable prometheus
-
-echo "Creating cloudwatch export script"
-
-cat << 'EOF' > /opt/shinymon.sh
-#!/bin/bash
-TOKEN=$(curl -s -X PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 21600")
-REGION=$(curl -s -H "X-aws-ec2-metadata-token: $TOKEN" http://169.254.169.254/latest/dynamic/instance-identity/document | jq -r ".region")
-ACCOUNTID=$(curl -s -H "X-aws-ec2-metadata-token: $TOKEN" http://169.254.169.254/latest/dynamic/instance-identity/document | jq -r ".accountId")
-INSTANCEID=$(curl -s -H "X-aws-ec2-metadata-token: $TOKEN" http://169.254.169.254/latest/meta-data/instance-id)
-ASGNAME=$(aws autoscaling describe-auto-scaling-instances --instance-ids ${INSTANCEID} --region ${REGION} | jq -r '.AutoScalingInstances[].AutoScalingGroupName')
-for APPNAME in $(curl -s http://localhost:7070/api/v1/query?query=absolute_apps_running | jq -r '.data.result[].metric.spec_id'); do
-        TIMESTAMP=$(date +%s)
-        VALUE=$(curl -s http://localhost:7070/api/v1/query?query=absolute_apps_running%7Bspec_id=%22${APPNAME}%22%7D | jq -r '.data.result[].value[1]')
-        aws cloudwatch put-metric-data --namespace ShinyApp --metric-name AppsRunning --unit Count --value ${VALUE} --dimensions InstanceId=${INSTANCEID},AppName=${APPNAME} --region ${REGION} --timestamp ${TIMESTAMP}
-        aws cloudwatch put-metric-data --namespace ShinyApp --metric-name AppsRunning --unit Count --value ${VALUE} --dimensions AutoScalingGroupName=${ASGNAME},AppName=${APPNAME} --region ${REGION} --timestamp ${TIMESTAMP}
-done
-EOF
-
-chmod 755 /opt/shinymon.sh
-
-if ! grep shinymon /etc/crontab > /dev/null; then
-  echo '* * * * * root /opt/shinymon.sh' >> /etc/crontab
-fi
+# install suggested system libraries for R packages
+apt install -y \
+    tcl tk tk-dev tk-table default-jdk libxml2-dev \
+    libssl-dev libfreetype6-dev libfribidi-dev libharfbuzz-dev \
+    git make libfontconfig1-dev cmake libsodium-dev \
+    libcairo2-dev libpng-dev libjpeg-dev \
+    libmysqlclient-dev unixodbc-dev libicu-dev libtiff-dev zlib1g-dev \
+    imagemagick libmagick++-dev gsfonts libcurl4-openssl-dev \
+    libglu1-mesa-dev libgl1-mesa-dev libssh2-1-dev libudunits2-dev perl \
+    libgdal-dev gdal-bin libgeos-dev libproj-dev libsqlite3-dev \
+    python3 libglpk-dev libgmp3-dev libnode-dev
 
 
 
+# install versions of python
+PYTHON_VERSION=3.9.5
+apt-get update -qq \
+    && curl -O https://cdn.rstudio.com/python/ubuntu-2204/pkgs/python-${PYTHON_VERSION}_1_amd64.deb \
+    && DEBIAN_FRONTEND=noninteractive gdebi -n python-${PYTHON_VERSION}_1_amd64.deb \
+    && /opt/python/"${PYTHON_VERSION}"/bin/pip install --upgrade pip setuptools wheel \
+    && rm -f ./python-${PYTHON_VERSION}_1_amd64.deb \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+PYTHON_VERSION_ALT=3.8.10
+apt-get update -qq \
+    && curl -O https://cdn.rstudio.com/python/ubuntu-2204/pkgs/python-${PYTHON_VERSION_ALT}_1_amd64.deb \
+    && DEBIAN_FRONTEND=noninteractive gdebi -n python-${PYTHON_VERSION_ALT}_1_amd64.deb \
+    && /opt/python/"${PYTHON_VERSION_ALT}"/bin/pip install --upgrade pip setuptools wheel \
+    && rm -f ./python-${PYTHON_VERSION_ALT}_1_amd64.deb \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+# install quarto
+QUARTO_VERSION=1.3.340
+curl -L -o /quarto.tar.gz "https://github.com/quarto-dev/quarto-cli/releases/download/v${QUARTO_VERSION}/quarto-${QUARTO_VERSION}-linux-amd64.tar.gz" \
+    && mkdir -p /opt/quarto/${QUARTO_VERSION} \
+    && tar -zxvf quarto.tar.gz -C "/opt/quarto/${QUARTO_VERSION}" --strip-components=1 \
+    && rm -f /quarto.tar.gz
+
+# install connect
+RSC_VERSION=2023.06.0
+apt-get update --fix-missing \
+    && RSC_VERSION_URL=$(echo -n "${RSC_VERSION}" | sed 's/+/%2B/g') \
+    && curl -L -o rstudio-connect.deb "https://cdn.rstudio.com/connect/$(echo $RSC_VERSION | sed -r 's/([0-9]+\.[0-9]+).*/\1/')/rstudio-connect_${RSC_VERSION_URL}~ubuntu22_amd64.deb" \
+    && gdebi -n rstudio-connect.deb \
+    && rm -rf rstudio-connect.deb \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+## verify connect signature
+# gpg --keyserver keyserver.ubuntu.com --recv-keys 3F32EE77E331692F
+# dpkg-sig --verify rstudio-connect_2023.06.0_amd64.deb
 
 

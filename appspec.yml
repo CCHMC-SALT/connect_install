@@ -2,7 +2,7 @@ version: 0.0
 os: linux
 files:
         - source: /files
-          destination: /etc/shinyproxy
+          destination: /etc/rstudio-connect
 hooks:
         ApplicationStop:
                 - location: /stop_service.sh
@@ -10,7 +10,7 @@ hooks:
                   runas: root
         BeforeInstall:
                 - location: /install_dependencies.sh
-                  timeout: 900
+                  timeout: 3000
                   runas: root
         AfterInstall:
                 - location: /configure_application.sh
