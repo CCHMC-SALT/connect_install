@@ -32,11 +32,11 @@ for PYTHON_VERSION in 3.8.10 3.9.5; do
 done
 
 # install quarto
-QUARTO_VERSION=1.3.340
-curl -L -o /quarto.tar.gz "https://github.com/quarto-dev/quarto-cli/releases/download/v${QUARTO_VERSION}/quarto-${QUARTO_VERSION}-linux-amd64.tar.gz"
-mkdir -p /opt/quarto/${QUARTO_VERSION}
-tar -zxvf quarto.tar.gz -C "/opt/quarto/${QUARTO_VERSION}" --strip-components=1
-rm -f /quarto.tar.gz
+# QUARTO_VERSION=1.3.340
+# curl -L -o /quarto.tar.gz "https://github.com/quarto-dev/quarto-cli/releases/download/v${QUARTO_VERSION}/quarto-${QUARTO_VERSION}-linux-amd64.tar.gz"
+# mkdir -p /opt/quarto/${QUARTO_VERSION}
+# tar -zxvf quarto.tar.gz -C "/opt/quarto/${QUARTO_VERSION}" --strip-components=1
+# rm -f /quarto.tar.gz
 
 # install connect
 curl -O https://cdn.rstudio.com/connect/2023.06/rstudio-connect_2023.06.0~ubuntu22_amd64.deb
