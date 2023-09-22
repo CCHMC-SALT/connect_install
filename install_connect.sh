@@ -5,7 +5,7 @@ apt-get update -qq
 apt-get install gdebi-core
 
 # install versions of R
-for R_VERSION in 3.6.2, 4.2.3; do
+for R_VERSION in 3.6.2 4.2.3; do
     curl -O https://cdn.rstudio.com/r/ubuntu-2204/pkgs/r-${R_VERSION}_1_amd64.deb
     gdebi r-${R_VERSION}_1_amd64.deb
     rm -f ./r-${R_VERSION}_1_amd64.deb
@@ -24,7 +24,7 @@ apt install -y \
     python3 libglpk-dev libgmp3-dev libnode-dev
 
 # install versions of python
-for PYTHON_VERSION in 3.8.10, 3.9.5; do
+for PYTHON_VERSION in 3.8.10 3.9.5; do
     curl -O https://cdn.rstudio.com/python/ubuntu-2204/pkgs/python-${PYTHON_VERSION}_1_amd64.deb
     DEBIAN_FRONTEND=noninteractive gdebi -n python-${PYTHON_VERSION}_1_amd64.deb
     /opt/python/"${PYTHON_VERSION}"/bin/pip install --upgrade pip setuptools wheel
