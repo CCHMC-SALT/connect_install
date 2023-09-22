@@ -8,5 +8,5 @@ This code uses the [AppSpec 'hooks'](https://docs.aws.amazon.com/codedeploy/late
 
 ## Deploying
 
-- `make bundle` to update the `connect_install.zip` file
-- send `connect_install.zip` to `s3://XXXXX` to trigger code deploy
+- `make bundle` to create/update the `rcon.zip` file
+- `make deploy` to upload zip file to AWS S3 to trigger code deploy
