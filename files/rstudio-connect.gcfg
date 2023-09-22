@@ -1,12 +1,12 @@
 ; RStudio Connect configuration file
 
 [Server]
-Address = "https://salt.cchmc.org"
+Address = "https://dev.salt.cchmc.org"
 EmailProvider = "SMTP"
-SenderEmail = "SALT_Grant@cchmc.onmicrosoft.com"
+SenderEmail = "salt@dev.salt.cchmc.org"
 SenderEmailDisplayName = "CCHMC SALT"
-EmailTo = "SALT_Grant@cchmc.onmicrosoft.com"
 EmailSubjectPrefix = "[CCHMC SALT]"
+EmailTo = "SALT_Grant@cchmc.onmicrosoft.com"
 DataDir = "/var/lib/rstudio-connect"
 ; LandingDir = ""
 EnableSitemap = true
@@ -18,7 +18,7 @@ HideEmailAddresses = true
 Listen = ":80"
 
 [SMTP]
-Host = ""
+Host = "email-smtp..amazonaws.com"
 Port = 
 User = ""
 Password = ""
