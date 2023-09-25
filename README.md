@@ -10,3 +10,4 @@ This code uses the [AppSpec 'hooks'](https://docs.aws.amazon.com/codedeploy/late
 
 - `make bundle` to create/update the `rcon.zip` file
 - `make deploy` to upload zip file to AWS S3 to trigger code deploy
+  - change `--profile` if not applicable
