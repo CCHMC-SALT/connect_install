@@ -19,9 +19,9 @@ Listen = ":80"
 
 [SMTP]
 Host = "email-smtp..amazonaws.com"
-Port = 
-User = ""
-Password = ""
+Port = 587
+User = "rcon-email-send-user"
+Password = "rcon-email-send-password"
 
 [Authentication]
 Provider = saml
