@@ -16,7 +16,7 @@ HideEmailAddresses = true
 Listen = ":80"
 
 [SMTP]
-Host = "email-smtp.us-east-1.amazonaws.com"
+Host = 
 Port = 587
 User = 
 Password = 
