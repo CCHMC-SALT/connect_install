@@ -1,19 +1,18 @@
 [Server]
-Address = "https://dev.salt.cchmc.org"
-EmailProvider = "SMTP"
-SenderEmail = "salt@dev.salt.cchmc.org"
-SenderEmailDisplayName = "CCHMC SALT"
-EmailSubjectPrefix = "[CCHMC SALT]"
-EmailTo = "SALT_Grant@cchmc.onmicrosoft.com"
-DataDir = "/var/lib/rstudio-connect"
-; LandingDir = ""
-EnableSitemap = true
-JumpStartEnabled = false
-Compilationconcurrency = 4
-HideEmailAddresses = true
+Address="https://dev.salt.cchmc.org"
+EmailProvider="SMTP"
+SenderEmail="salt@dev.salt.cchmc.org"
+SenderEmailDisplayName="CCHMC SALT"
+EmailSubjectPrefix="[CCHMC SALT]"
+EmailTo="SALT_Grant@cchmc.onmicrosoft.com"
+DataDir="/var/lib/rstudio-connect"
+EnableSitemap=true
+JumpStartEnabled=false
+Compilationconcurrency=4
+HideEmailAddresses=true
 
 [HTTPS]
-Listen = ":80"
+Listen=":80"
 
 [SMTP]
 Host = 
@@ -22,39 +21,38 @@ User =
 Password = 
 
 [Authentication]
-Provider = saml
+Provider=saml
 
 [R]
-VersionMatching = major-minor
-ExecutableScanning = false
-Executable = /opt/r/3.6.2/bin/r
-Executable = /opt/r/4.1.0/bin/r
+VersionMatching=major-minor
+ExecutableScanning=false
+Executable=/opt/r/3.6.2/bin/r
+Executable=/opt/r/4.1.0/bin/r
 
 [Python]
-Enabled = true
-VersionMatching = major-minor
-Executable = /opt/python/3.8.10/bin/python
-Executable = /opt/python/3.9.5/bin/python
+Enabled=true
+VersionMatching=major-minor
+Executable=/opt/python/3.8.10/bin/python
+Executable=/opt/python/3.9.5/bin/python
 
 [Quarto]
-Enabled = true
-VersionMatching = nearest
-Executable = /opt/quarto/1.3.340/bin/quarto
+Enabled=true
+VersionMatching=nearest
+Executable=/opt/quarto/1.3.340/bin/quarto
 
 [Git]
-PollingFrequency = 1m
+PollingFrequency=1m
 
 [RPackageRepository "CRAN"]
-URL = https://packagemanager.rstudio.com/cran/__linux__/bionic/latest
+URL=https://packagemanager.rstudio.com/cran/__linux__/bionic/latest
 
 [RPackageRepository "RSPM"]
-URL = https://packagemanager.rstudio.com/cran/__linux__/bionic/latest
-
-[Branding]
+URL=https://packagemanager.rstudio.com/cran/__linux__/bionic/latest
 
 [Logging]
-ServiceLog = /var/log/rstudio/rstudio-connect/rstudio-connect.log
-AccessLog =  /var/log/rstudio/rstudio-connect/rstudio-connect.access.log
+ServiceLog=/var/log/rstudio/rstudio-connect/rstudio-connect.log
+AccessLog=/var/log/rstudio/rstudio-connect/rstudio-connect.access.log
 
 [Notifications "*"]
-Email = "SALT_Grant@cchmc.onmicrosoft.com"
+Email="SALT_Grant@cchmc.onmicrosoft.com"
+
