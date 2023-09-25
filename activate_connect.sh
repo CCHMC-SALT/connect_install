@@ -7,7 +7,9 @@ export RSC_LICENSE=`aws secretsmanager get-secret-value --secret-id saltdev-d1-r
 
 systemctl restart rstudio-connect
 
-# add SMTP email credentials to rcon gcfg file
-R -e "source('./update_rcon_ini.R')"
+# # add SMTP email credentials to rcon gcfg file
+# export R_PATH=`which R`
+# echo $R_PATH
+# $R_PATH -e "source('./update_rcon_ini.R')"
 
-systemctl restart rstudio-connect
+# systemctl restart rstudio-connect
