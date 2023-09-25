@@ -1,5 +1,3 @@
-; RStudio Connect configuration file
-
 [Server]
 Address = "https://dev.salt.cchmc.org"
 EmailProvider = "SMTP"
@@ -18,10 +16,10 @@ HideEmailAddresses = true
 Listen = ":80"
 
 [SMTP]
-Host = "email-smtp..amazonaws.com"
+Host = "email-smtp.us-east-1.amazonaws.com"
 Port = 587
-User = "rcon-email-send-user"
-Password = "rcon-email-send-password"
+User = 
+Password = 
 
 [Authentication]
 Provider = saml
