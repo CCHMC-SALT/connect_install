@@ -11,8 +11,11 @@ JumpStartEnabled=false
 Compilationconcurrency=4
 HideEmailAddresses=true
 
+[HTTP]
+Listen=:80
+
 [HTTPS]
-Listen=":80"
+Listen=:443
 
 [SMTP]
 Host = 
