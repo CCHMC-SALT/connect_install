@@ -20,8 +20,8 @@ Listen=:80
 ; User = 
 ; Password = 
 
-[Authentication]
-Provider=saml
+; [Authentication]
+; Provider=saml
 ; https://docs.posit.co/connect/admin/authentication/proxied/
 
 ; [R]

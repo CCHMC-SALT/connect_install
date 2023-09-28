@@ -7,7 +7,7 @@ apt-get install gdebi-core
 # install versions of R
 for R_VERSION in 3.6.3 4.0.5 4.1.3 4.2.3 4.3.1; do
     curl -O https://cdn.rstudio.com/r/ubuntu-2204/pkgs/r-${R_VERSION}_1_amd64.deb
-    gdebi r-${R_VERSION}_1_amd64.deb
+    gdebi --non-interactive r-${R_VERSION}_1_amd64.deb
     rm -f ./r-${R_VERSION}_1_amd64.deb
 done
 
