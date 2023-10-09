@@ -26,7 +26,7 @@ apt install -y \
 # # install versions of python
 # for PYTHON_VERSION in 3.8.10 3.9.5; do
 #     curl -O https://cdn.rstudio.com/python/ubuntu-2204/pkgs/python-${PYTHON_VERSION}_1_amd64.deb
-#     DEBIAN_FRONTEND=noninteractive gdebi -n python-${PYTHON_VERSION}_1_amd64.deb
+#     gdebi --non-interactive python-${PYTHON_VERSION}_1_amd64.deb
 #     /opt/python/"${PYTHON_VERSION}"/bin/pip install --upgrade pip setuptools wheel
 #     rm -f ./python-${PYTHON_VERSION}_1_amd64.deb
 # done

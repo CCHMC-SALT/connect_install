@@ -1,34 +1,62 @@
 [Server]
-Address=https://dev.salt.cchmc.org:80
-; EmailProvider="SMTP"
+Address=https://dev.salt.cchmc.org
+ServerName="CCHMC SALT dev-1"
+HideVersion=true
+HideViewerDocumentation=true
+CompilationConcurrency=4
 ; SenderEmail="salt@dev.salt.cchmc.org"
 ; SenderEmailDisplayName="CCHMC SALT"
 ; EmailSubjectPrefix="[CCHMC SALT]"
 ; EmailTo="SALT_Grant@cchmc.onmicrosoft.com"
-; DataDir="/var/lib/rstudio-connect"
-; EnableSitemap=true
-; JumpStartEnabled=false
-; Compilationconcurrency=4
+; EmailProvider="SMTP"
 ; HideEmailAddresses=true
+ViewerKiosk=true
+HideEmailAddresses=true
+; DashboardPath=/connect
+
+; [R]
+; VersionMatching=major-minor
+; VersionScanning=true
 
 [HTTP]
 Listen=:80
+NoWarning=true
+ForceSecure=true
+
+[Authorization]
+DefaultUserRole=viewer
+PublishersCanOwnGroups=true
+PublishersCanAddUsers=true
+PublishersCanManageVanities=true
+ViewersCanOnlySeeThemselves=true
+ContentCredentialsUseGUID=false
+UserRoleMapping=true
+AdministratorRoleMapping="broeg1_71897@cchmc.org"
+; AdministratorRoleMapping="1df93bf1-8c82-486d-b599-14eca6beec4b"
+
+[Authentication]
+Provider=proxy
+Name=CCHMC-SALT
+
+[ProxyAuth]
+UniqueIdHeader=X-Auth-Email
+EmailHeader=X-Auth-Email
+UsernameHeader=X-Auth-Username
+FirstNameHeader=X-Auth-First-Name
+LastNameHeader=X-Auth-Last-Name
+RoleHeader=X-Auth-Username
+RegisterOnFirstLogin=true
+Logging=true
+
+[Logging]
+ServiceLog = /var/log/rcon-service.log
+AccessLog = /var/log/rcon-access.log
 
 ; [SMTP]
 ; Host = 
 ; Port = 587
 ; User = 
 ; Password = 
-
-; [Authentication]
-; Provider=saml
-; https://docs.posit.co/connect/admin/authentication/proxied/
-
-; [R]
-; VersionMatching=major-minor
-; ExecutableScanning=false
-; Executable=/opt/r/3.6.2/bin/r
-; Executable=/opt/r/4.1.0/bin/r
 
 ; [Python]
 ; Enabled=true
@@ -49,10 +77,6 @@ URL=https://packagemanager.rstudio.com/cran/__linux__/jammy/latest
 
 [RPackageRepository "RSPM"]
 URL=https://packagemanager.rstudio.com/cran/__linux__/jammy/latest
-
-[Logging]
-ServiceLog = /var/log/rcon-service.log
-AccessLog = /var/log/rcon-access.log
 
 ; [Notifications "*"]
 ; Email="SALT_Grant@cchmc.onmicrosoft.com"
