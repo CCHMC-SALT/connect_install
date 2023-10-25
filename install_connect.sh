@@ -39,5 +39,5 @@ apt install -y \
 # rm -f /quarto.tar.gz
 
 # install connect
-curl -O https://cdn.rstudio.com/connect/2023.06/rstudio-connect_2023.06.0~ubuntu22_amd64.deb
-gdebi --non-interactive rstudio-connect_2023.06.0~ubuntu22_amd64.deb
+curl -O https://cdn.rstudio.com/connect/2023.09/rstudio-connect_2023.09.0~ubuntu22_amd64.deb
+gdebi --non-interactive rstudio-connect_2023.09.0~ubuntu22_amd64.deb
