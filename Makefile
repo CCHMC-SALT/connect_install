@@ -5,6 +5,6 @@ deploy: rcon.zip
 	aws s3 --profile salty cp rcon.zip s3://saltdev-d1-codedeploy/rcon/rcon.zip
 
 shell:
-	aws ssm --profile salty start-session --target i-087691247f237b67b
+	aws ssm --profile salty start-session --target i-09ecc8c00002b56b9
 
 

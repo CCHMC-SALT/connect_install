@@ -14,9 +14,9 @@ ViewerKiosk=true
 HideEmailAddresses=true
 ; DashboardPath=/connect
 
-; [R]
-; VersionMatching=major-minor
-; VersionScanning=true
+[R]
+VersionMatching=major-minor
+VersionScanning=true
 
 [HTTP]
 Listen=:80
@@ -32,7 +32,6 @@ ViewersCanOnlySeeThemselves=true
 ContentCredentialsUseGUID=false
 UserRoleMapping=true
 AdministratorRoleMapping="broeg1_71897@cchmc.org"
-; AdministratorRoleMapping="1df93bf1-8c82-486d-b599-14eca6beec4b"
 
 [Authentication]
 Provider=proxy
@@ -69,8 +68,8 @@ AccessLog = /var/log/rcon-access.log
 ; VersionMatching=nearest
 ; Executable=/opt/quarto/1.3.340/bin/quarto
 
-; [Git]
-; PollingFrequency=1m
+[Git]
+PollingFrequency=1m
 
 [RPackageRepository "CRAN"]
 URL=https://packagemanager.rstudio.com/cran/__linux__/jammy/latest
