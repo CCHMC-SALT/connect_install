@@ -14,6 +14,9 @@ ViewerKiosk=true
 HideEmailAddresses=true
 ; DashboardPath=/connect
 
+[Database]
+Provider=postgres
+
 ; [R]
 ; VersionMatching=major-minor
 ; VersionScanning=true
