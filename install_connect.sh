@@ -53,4 +53,4 @@ fi
 mount $FSID $MOUNTPOINT
 
 # update gcfg file
-$R_PATH -e "source('./update_rcon_ini.R')"
+/opt/R/4.3.1/bin/Rscript /etc/rcon/update_rcon_ini.R

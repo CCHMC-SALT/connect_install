@@ -27,12 +27,12 @@ secrets <- list(
   db = get_secret("saltdev-d1-rcon-dbuser-secret")
 )
 
-d_ini <- read.ini("files/rstudio-connect.gcfg")
+d_ini <- read.ini("/etc/rcon/rstudio-connect.gcfg")
 
 d_ini$SMTP$Host <- glue("email-smtp.{the_region}.amazonaws.com")
 d_ini$SMTP$User <- secrets$ses$key
 d_ini$SMTP$Password <-
-  system2("./convert_smtp_password.py",
+  system2("/etc/rcon/convert_smtp_password.py",
     c(secrets$ses$secret, the_region),
     stdout = TRUE
   )

@@ -2,7 +2,7 @@ version: 0.0
 os: linux
 files:
   - source: /files
-    destination: /etc/rstudio-connect
+    destination: /etc/rcon
 file_exists_behavior: OVERWRITE
 hooks:
   BeforeInstall:
