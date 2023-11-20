@@ -1,6 +1,7 @@
 [Server]
 Address=https://dev.salt.cchmc.org
 ServerName="CCHMC SALT dev-1"
+DataDir="/reference-data"
 HideVersion=true
 HideViewerDocumentation=true
 CompilationConcurrency=4

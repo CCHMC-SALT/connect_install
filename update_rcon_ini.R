@@ -40,26 +40,4 @@ d_ini$SMTP$Password <-
 d_ini$Postgres$URL <-
   glue_data(secrets$db, "postgres://{username}:{password}@{host}/{dbname}")
 
-get_ssm <- function(parameter_name) {
-  params <-
-    system2("aws",
-      c(
-        "ssm",
-        "--profile salty",
-        "get-parameter",
-        "--name",
-        parameter_name,
-        "--output", "json"
-      ),
-      stdout = TRUE
-    ) |>
-    jsonlite::fromJSON()
-  return(params)
-}
-
-params <- list()
-params$efs <- get_ssm("/Infra/App/rcon/EfsFsId")
-d_ini$Server$DataDir <- params$efs$Parameter$Value
-
-
 write.ini(d_ini, "files/rstudio-connect.gcfg")

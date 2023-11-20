@@ -6,11 +6,3 @@ export RSC_LICENSE=`aws secretsmanager get-secret-value --secret-id saltdev-d1-r
 /opt/rstudio-connect/bin/license-manager activate $RSC_LICENSE
 
 systemctl restart rstudio-connect
-
-# update gcfg file
-$R_PATH -e "source('./update_rcon_ini.R')"
-
-systemctl restart rstudio-connect
-
-# mount efs ...
-# efs-utils

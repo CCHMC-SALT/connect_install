@@ -41,3 +41,16 @@ apt install -y \
 # install connect
 curl -O https://cdn.rstudio.com/connect/2023.09/rstudio-connect_2023.09.0~ubuntu22_amd64.deb
 gdebi --non-interactive rstudio-connect_2023.09.0~ubuntu22_amd64.deb
+
+# mount efs resource for Server.DataDir
+FSID=$(getparameter /Infra/App/shiny/EfsFsId)
+MOUNTPOINT="/reference-data"
+
+if [ ! -d $MOUNTPOINT ]; then
+  mkdir $MOUNTPOINT
+fi
+
+mount $FSID $MOUNTPOINT
+
+# update gcfg file
+$R_PATH -e "source('./update_rcon_ini.R')"
