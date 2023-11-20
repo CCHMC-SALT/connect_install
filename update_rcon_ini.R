@@ -5,26 +5,26 @@ if (!require(aws.signature)) install.packages("aws.signature")
 
 the_region <- "us-east-1"
 
-secret_getter <- function(secret_id) {
+get_secret <- function(secret_id) {
   secrets <-
     system2("aws",
-          c(
-            "secretsmanager",
-            "--profile salty",
-            "get-secret-value",
-            "--secret-id", secret_id,
-            "--region", the_region,
-            "--output", "json"
-          ),
-          stdout = TRUE
-          ) |>
+      c(
+        "secretsmanager",
+        ## "--profile salty",
+        "get-secret-value",
+        "--secret-id", secret_id,
+        "--region", the_region,
+        "--output", "json"
+      ),
+      stdout = TRUE
+    ) |>
     jsonlite::fromJSON()
   return(jsonlite::fromJSON(secrets$SecretString))
 }
 
 secrets <- list(
-  ses = secret_getter("saltdev-d1-ses-send-user-secret"),
-  db = secret_getter("saltdev-d1-rcon-dbuser-secret")
+  ses = get_secret("saltdev-d1-ses-send-user-secret"),
+  db = get_secret("saltdev-d1-rcon-dbuser-secret")
 )
 
 d_ini <- read.ini("files/rstudio-connect.gcfg")
@@ -33,10 +33,33 @@ d_ini$SMTP$Host <- glue("email-smtp.{the_region}.amazonaws.com")
 d_ini$SMTP$User <- secrets$ses$key
 d_ini$SMTP$Password <-
   system2("./convert_smtp_password.py",
-          c(secrets$ses$secret, the_region),
-          stdout = TRUE)
+    c(secrets$ses$secret, the_region),
+    stdout = TRUE
+  )
 
 d_ini$Postgres$URL <-
   glue_data(secrets$db, "postgres://{username}:{password}@{host}/{dbname}")
+
+get_ssm <- function(parameter_name) {
+  params <-
+    system2("aws",
+      c(
+        "ssm",
+        "--profile salty",
+        "get-parameter",
+        "--name",
+        parameter_name,
+        "--output", "json"
+      ),
+      stdout = TRUE
+    ) |>
+    jsonlite::fromJSON()
+  return(params)
+}
+
+params <- list()
+params$efs <- get_ssm("/Infra/App/rcon/EfsFsId")
+d_ini$Server$DataDir <- params$efs$Parameter$Value
+
 
 write.ini(d_ini, "files/rstudio-connect.gcfg")
