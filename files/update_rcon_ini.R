@@ -1,3 +1,5 @@
+message("working directory currently is ", getwd())
+options(repos = "https://cran.rstudio.com")
 if (!require(ini)) install.packages("ini")
 if (!require(glue)) install.packages("glue")
 if (!require(jsonlite)) install.packages("jsonlite")
@@ -8,16 +10,9 @@ the_region <- "us-east-1"
 get_secret <- function(secret_id) {
   secrets <-
     system2("aws",
-      c(
-        "secretsmanager",
-        ## "--profile salty",
-        "get-secret-value",
-        "--secret-id", secret_id,
-        "--region", the_region,
-        "--output", "json"
-      ),
-      stdout = TRUE
-    ) |>
+            c("secretsmanager", "get-secret-value", "--secret-id", secret_id, "--region", the_region, "--output", "json"),
+            stdout = TRUE
+            ) |>
     jsonlite::fromJSON()
   return(jsonlite::fromJSON(secrets$SecretString))
 }
@@ -27,7 +22,7 @@ secrets <- list(
   db = get_secret("saltdev-d1-rcon-dbuser-secret")
 )
 
-d_ini <- read.ini("/etc/rcon/rstudio-connect.gcfg")
+d_ini <- ini::read.ini("/etc/rcon/rstudio-connect.gcfg")
 
 d_ini$SMTP$Host <- glue("email-smtp.{the_region}.amazonaws.com")
 d_ini$SMTP$User <- secrets$ses$key
@@ -38,6 +33,8 @@ d_ini$SMTP$Password <-
   )
 
 d_ini$Postgres$URL <-
-  glue_data(secrets$db, "postgres://{username}:{password}@{host}/{dbname}")
+  glue::glue_data(secrets$db, "postgres://{username}:{password}@{host}/{dbname}") |>
+  utils::URLencode()
 
-write.ini(d_ini, "files/rstudio-connect.gcfg")
+## dir.create("/etc/rstudio-connect", showWarnings = FALSE)
+ini::write.ini(d_ini, "/etc/rstudio-connect/rstudio-connect.gcfg")

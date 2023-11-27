@@ -42,15 +42,28 @@ apt install -y \
 curl -O https://cdn.rstudio.com/connect/2023.09/rstudio-connect_2023.09.0~ubuntu22_amd64.deb
 gdebi --non-interactive rstudio-connect_2023.09.0~ubuntu22_amd64.deb
 
+# mount efs
+getssm() {
+        aws ssm get-parameter --region us-east-1 --name $1 | jq -r '.Parameter.Value'
+        }
+
 # mount efs resource for Server.DataDir
-FSID=$(getparameter /Infra/App/shiny/EfsFsId)
+FSID=$(getssm /Infra/App/rcon/EfsFsId)
 MOUNTPOINT="/reference-data"
 
 if [ ! -d $MOUNTPOINT ]; then
   mkdir $MOUNTPOINT
 fi
 
-mount $FSID $MOUNTPOINT
+if ! grep $FSID /etc/fstab > /dev/null; then
+  echo "${FSID}:/ ${MOUNTPOINT} efs _netdev,tls 0 0" >> /etc/fstab
+fi
 
-# update gcfg file
-/opt/R/4.3.1/bin/Rscript /etc/rcon/update_rcon_ini.R
+if ! mount | grep $MOUNTPOINT > /dev/null; then
+  mount $MOUNTPOINT
+fi
+
+echo "working from ${PWD}"
+
+# update gcfg file with secrets
+/opt/R/4.3.1/bin/Rscript /opt/rcon/update_rcon_ini.R
