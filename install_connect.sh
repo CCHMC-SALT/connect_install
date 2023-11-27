@@ -63,7 +63,3 @@ if ! mount | grep $MOUNTPOINT > /dev/null; then
   mount $MOUNTPOINT
 fi
 
-echo "working from ${PWD}"
-
-# update gcfg file with secrets
-/opt/R/4.3.1/bin/Rscript /opt/rcon/update_rcon_ini.R
