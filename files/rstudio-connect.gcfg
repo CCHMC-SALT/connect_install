@@ -21,6 +21,7 @@ Provider=postgres
 ; [R]
 ; VersionMatching=major-minor
 ; VersionScanning=true
+; RestoreUsesGitCredentials = true
 
 [HTTP]
 Listen=:80
@@ -28,7 +29,7 @@ NoWarning=true
 ForceSecure=true
 
 [Authorization]
-DefaultUserRole=viewer
+; DefaultUserRole=viewer
 PublishersCanOwnGroups=true
 PublishersCanAddUsers=true
 PublishersCanManageVanities=true
@@ -48,7 +49,8 @@ UsernameHeader=X-Auth-Username
 FirstNameHeader=X-Auth-First-Name
 LastNameHeader=X-Auth-Last-Name
 RoleHeader=X-Auth-Username
-RegisterOnFirstLogin=true
+;RoleHeader=X-Auth-RSC-Role
+RegisterOnFirstLogin=false
 Logging=true
 
 [Logging]
@@ -72,8 +74,13 @@ AccessLog = /var/log/rcon-access.log
 ; VersionMatching=nearest
 ; Executable=/opt/quarto/1.3.340/bin/quarto
 
-; [Git]
-; PollingFrequency=1m
+[Git]
+PollingFrequency=15s
+
+[GitCredential]
+Host = github.com
+Protocol = https
+
 
 [RPackageRepository "CRAN"]
 URL=https://packagemanager.rstudio.com/cran/__linux__/jammy/latest

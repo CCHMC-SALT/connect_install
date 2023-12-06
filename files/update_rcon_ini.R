@@ -19,7 +19,8 @@ get_secret <- function(secret_id) {
 
 secrets <- list(
   ses = get_secret("saltdev-d1-ses-send-user-secret"),
-  db = get_secret("saltdev-d1-rcon-dbuser-secret")
+  db = get_secret("saltdev-d1-rcon-dbuser-secret"),
+  gh = get_secret("saltdev-d1-rcon-github")
 )
 
 d_ini <- ini::read.ini("./files/rstudio-connect.gcfg")
@@ -36,6 +37,9 @@ d_ini$Postgres$URL <-
   glue::glue_data(secrets$db, "postgres://{username}@{host}/{dbname}") |>
   utils::URLencode()
 d_ini$Postgres$Password <- glue::glue("\"{secrets$db$password}\"")
+
+d_ini$GitCredential$Username <- "CCHMC-SALT"
+d_ini$GitCredential$Password <- secrets$gh$SecretString
 
 ## dir.create("/etc/rstudio-connect", showWarnings = FALSE)
 ini::write.ini(d_ini, "/etc/rstudio-connect/rstudio-connect.gcfg")
