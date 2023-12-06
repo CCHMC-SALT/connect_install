@@ -5,6 +5,8 @@ echo "working from ${PWD}"
 # update gcfg file with secrets
 /opt/R/4.3.1/bin/Rscript ./files/update_rcon_ini.R
 
+sleep 20
+
 systemctl restart rstudio-connect
 
 # activate license

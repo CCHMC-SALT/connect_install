@@ -2,7 +2,7 @@
 
 DEBIAN_FRONTEND=noninteractive 
 apt-get update -qq
-apt-get install curl gdebi-core
+apt-get -y install curl gdebi-core
 
 # install versions of R
 for R_VERSION in 3.6.3 4.0.5 4.1.3 4.2.3 4.3.1; do

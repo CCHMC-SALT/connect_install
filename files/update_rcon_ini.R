@@ -35,7 +35,7 @@ d_ini$SMTP$Password <-
 d_ini$Postgres$URL <-
   glue::glue_data(secrets$db, "postgres://{username}@{host}/{dbname}") |>
   utils::URLencode()
-d_ini$Postgres$Password <- glue::glue("\"{utils::URLencode(secrets$db$password)}\"")
+d_ini$Postgres$Password <- glue::glue("\"{secrets$db$password}\"")
 
 ## dir.create("/etc/rstudio-connect", showWarnings = FALSE)
 ini::write.ini(d_ini, "/etc/rstudio-connect/rstudio-connect.gcfg")
