@@ -2,17 +2,17 @@
 Address=https://dev.salt.cchmc.org
 ServerName="CCHMC SALT dev-1"
 DataDir="/reference-data"
-HideVersion=true
+; HideVersion=true
 HideViewerDocumentation=true
-CompilationConcurrency=4
+CompilationConcurrency=2
 ; SenderEmail="salt@dev.salt.cchmc.org"
 ; SenderEmailDisplayName="CCHMC SALT"
 ; EmailSubjectPrefix="[CCHMC SALT]"
 ; EmailTo="SALT_Grant@cchmc.onmicrosoft.com"
 ; EmailProvider="SMTP"
 ; HideEmailAddresses=true
-ViewerKiosk=true
-HideEmailAddresses=true
+; ViewerKiosk=true
+; HideEmailAddresses=true
 ; DashboardPath=/connect
 
 [Database]
@@ -46,12 +46,12 @@ Name=CCHMC-SALT
 UniqueIdHeader=X-Auth-Email
 EmailHeader=X-Auth-Email
 UsernameHeader=X-Auth-Username
-FirstNameHeader=X-Auth-First-Name
-LastNameHeader=X-Auth-Last-Name
+; FirstNameHeader=X-Auth-First-Name
+; LastNameHeader=X-Auth-Last-Name
 RoleHeader=X-Auth-Username
 ;RoleHeader=X-Auth-RSC-Role
 RegisterOnFirstLogin=false
-Logging=true
+; Logging=true
 
 [Logging]
 ServiceLog = /var/log/rcon-service.log
