@@ -19,8 +19,8 @@ get_secret <- function(secret_id) {
 
 secrets <- list(
   ses = get_secret("saltdev-d1-ses-send-user-secret"),
-  db = get_secret("saltdev-d1-rcon-dbuser-secret"),
-  gh = get_secret("saltdev-d1-rcon-github")
+  ## gh = get_secret("saltdev-d1-rcon-github"),
+  db = get_secret("saltdev-d1-rcon-dbuser-secret")
 )
 
 d_ini <- ini::read.ini("./files/rstudio-connect.gcfg")
@@ -38,8 +38,12 @@ d_ini$Postgres$URL <-
   utils::URLencode()
 d_ini$Postgres$Password <- glue::glue("\"{secrets$db$password}\"")
 
-d_ini$GitCredential$Username <- "CCHMC-SALT"
-d_ini$GitCredential$Password <- secrets$gh$SecretString
+## d_ini$GitCredential$Username <- "CCHMC-SALT"
+## d_ini$GitCredential$Password <- secrets$gh$SecretString
+
+d_ini$Metrics$DataPath <-
+  paste0("/reference-data/metrics/",
+         system2("cat", "/etc/machine-id", stdout = TRUE))
 
 ## dir.create("/etc/rstudio-connect", showWarnings = FALSE)
 ini::write.ini(d_ini, "/etc/rstudio-connect/rstudio-connect.gcfg")
