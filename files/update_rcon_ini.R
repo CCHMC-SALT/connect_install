@@ -1,9 +1,12 @@
 message("working directory currently is ", getwd())
 options(repos = "https://cran.rstudio.com")
-if (!require(ini)) install.packages("ini")
-if (!require(glue)) install.packages("glue")
-if (!require(jsonlite)) install.packages("jsonlite")
-if (!require(aws.signature)) install.packages("aws.signature")
+install.packages("ini")
+install.packages("glue")
+install.packages("jsonlite")
+
+library(ini)
+library(glue)
+library(jsonlite)
 
 the_region <- "us-east-1"
 

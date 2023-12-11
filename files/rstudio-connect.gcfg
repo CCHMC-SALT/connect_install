@@ -18,10 +18,14 @@ CompilationConcurrency=2
 [Database]
 Provider=postgres
 
-; [R]
-; VersionMatching=major-minor
-; VersionScanning=true
-; RestoreUsesGitCredentials = true
+[R]
+VersionMatching=major-minor
+Executable=/opt/R/3.6.3/bin/R
+Executable=/opt/R/4.0.5/bin/R
+Executable=/opt/R/4.1.3/bin/R
+Executable=/opt/R/4.2.3/bin/R
+Executable=/opt/R/4.3.1/bin/R
+RestoreUsesGitCredentials=true
 
 [HTTP]
 Listen=:80
@@ -64,15 +68,14 @@ AccessLog = /var/log/rcon-access.log
 ; Password = 
 
 ; [Python]
-; Enabled=true
 ; VersionMatching=major-minor
-; Executable=/opt/python/3.8.10/bin/python
-; Executable=/opt/python/3.9.5/bin/python
+; Executable=/opt/python/3.8.10/bin/python3
+; Executable=/opt/python/3.9.5/bin/python3
 
-; [Quarto]
-; Enabled=true
-; VersionMatching=nearest
-; Executable=/opt/quarto/1.3.340/bin/quarto
+[Quarto]
+Enabled=true
+VersionMatching=nearest
+Executable=/opt/quarto/1.3.340/bin/quarto
 
 [Git]
 PollingFrequency=15s
